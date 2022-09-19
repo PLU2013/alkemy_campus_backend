@@ -1,0 +1,34 @@
+--> ORDERS:
+
+	GET	GetAllOrders: localhost.../orders
+	GET	GetOrdersByUserId: localhost.../orders/:idUser
+	POST	InsertOrder: localhost.../orders/neworder ---> Por body se pasa el JSON de la nueva Order.
+
+--> PRODUCTS:
+	
+	GET	GetAllProducts: localhost.../products
+
+--> USERS:
+	
+	GET	GetAllUsers: localhost.../users
+	GET 	GetUserById: localhost.../users/:campo ---> Por query string le pasas el campo y por parametro el UserId...
+						 EJEMPLOS:
+							-)"	http://localhost:3000/api/users/image/   "
+							  Devuelve todos el campo imagen de todos los usuarios.
+							-)http://localhost:3000/api/users/image/?userId=2
+							  Devuelve el campo imagen de usuario con Id=2	
+
+PARA SOCKET.IO
+
+--> USERS:
+	
+	GET	GetAllUsers			(getAll:users)  		*No se le envia ninguna data.
+	GET 	GetUserById:		(getById:users) 		*Objeto Data tiene que ser un arreglo de Data[userId, campo];
+										--Si no se pasa el campo, pero si el Id, devuelve todo un usuario
+										--Si no se pasa el Id pero si el Campo, devuelve el campo de todos los usuarios
+										--Si se pasan ambos, devuelve el Campo, para ese usuario.
+										--OJO, si no se quiere filtrar por usuario, hay que mandar el userID como 0...
+	GET	ClearAllOrderReady	(clearOrderReady)		*No se envia ningun data.
+	PUT	UpdateCampo			(updateCampo:users)	*Objeto Data tiene que ser un arreglo de Data[userId, jsonModificación];
+										 
+						 	
