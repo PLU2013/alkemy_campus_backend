@@ -2,9 +2,9 @@
     "version": 2,
     "name": "alkemy-backend",
     "builds": [
-        { "src": "./index.js", "use": "@vercel/node" }
+        { "src": "*.js", "use": "@vercel/node" }
     ],
-    "routes": [
+    "routes": [{"handle": "filesystem"},
         { "src": "/(.*)", "dest": "/" }
     ]
 }
