@@ -1,8 +1,7 @@
 const mysql = require("mysql2/promise");
-const CONFIG = require("../../config/config.js");
-const queries = require("../../config/queries.js");
-
-let connection;
+const cfg = require("../../config/config.js");
+const queries = require("./queries.js");
+const { generateToken } = require("../../sec");
 
 const db = {
   /**
@@ -12,7 +11,7 @@ const db = {
    */
   async connect() {
     try {
-      connection = await mysql.createConnection(CONFIG.DB);
+      connection = await mysql.createConnection(cfg.DB);
       console.log("DB connection succefull!!");
     } catch (err) {
       console.log(err);
@@ -32,7 +31,7 @@ const db = {
         ? `User logged in as ${results[0].email}`
         : `Invalid user or pass for this ${email}`
     );
-    return (results[0] ??= []);
+    return results.length == 1 ? generateToken(results[0]) : [];
   },
 
   /**
@@ -100,12 +99,8 @@ const db = {
    * @returns {object} mysql server response.
    */
   async cancelOperation(id, user_id) {
-    return await query(queries.cancelTransaction, [
-      true,
-      new Date(),
-      id,
-      user_id,
-    ]);
+    await query(queries.cancelTransaction, [true, new Date(), id, user_id]);
+    return await db.updateUserAcountBalance(user_id);
   },
   /**
    * @method putOperation - Write a new operation into the operations table.
@@ -116,13 +111,23 @@ const db = {
    * @returns {object} mysql server response.
    */
   async putOperation(user_id, concept_id, amount, type) {
-    return await query(queries.putTransaction, [
+    const res = await query(queries.putTransaction, [
       user_id,
       concept_id,
       amount,
       type,
       new Date(),
     ]);
+    return res.insertId != 0 ? await db.updateUserAcountBalance(user_id) : res;
+  },
+
+  /**
+   * @method updateUserAcountBalance - Write a new operation into the operations table.
+   * @param {int} user_id - User id.
+   * @returns {object} mysql server response.
+   */
+  async updateUserAcountBalance(user_id) {
+    return await query(queries.updateAccountBalance, [new Date(), user_id]);
   },
 };
 
@@ -136,6 +141,8 @@ async function query(query, params) {
   const [results] = await connection.query(query, params);
   return results;
 }
+
+let connection;
 
 db.connect();
 

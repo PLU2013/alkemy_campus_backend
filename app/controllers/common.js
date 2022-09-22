@@ -11,7 +11,7 @@ async function query(
       ? res.status(trueCode).json(query)
       : res.status(msg.code).json({ message: msg.message });
   } catch (err) {
-    if ((err.code = "ER_DUP_ENTRY")) {
+    if (err.code == "ER_DUP_ENTRY") {
       console.log(
         `Error: duplicated email entry '${queryArg[2]}' at ${new Date()}`
       );

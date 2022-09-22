@@ -4,9 +4,10 @@ module.exports = class UserModel {
   lastname;
   email;
   pass;
-  timeStamp;
   active;
-  account_balance;
+  accountBalance;
+  created_at;
+  updated_at;
 
   constructor(json) {
     Object.assign(this, json);

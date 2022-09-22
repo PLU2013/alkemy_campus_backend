@@ -57,7 +57,7 @@ module.exports = {
    */
   cancelTransaction: `UPDATE operations
       SET canceled = ?, canceled_date = ?
-      WHERE id = ? AND user_id ?`,
+      WHERE id = ? AND user_id = ?`,
 
   /**
    * @type {string}
@@ -87,13 +87,14 @@ module.exports = {
   /**
    * @type {string}
    * Update the acount balance to an user.
-   * Use [user_id] as second param in the query.
+   * Use [updated_at, user_id] as second param in the query.
+   * @type {datetime} updated_at.
    * @type {int} user_id.
    */
   updateAccountBalance: `UPDATE users u
     INNER JOIN (
     SELECT user_id, canceled, SUM(amount) a FROM operations
     GROUP BY user_id, canceled) op ON u.id = op.user_id
-    SET u.account_balance = op.a
+    SET u.account_balance = op.a, updated_at = ?
     WHERE u.id = ? AND canceled = false`,
 };
