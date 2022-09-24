@@ -39,7 +39,7 @@ const sec = {
           req.body.jwtPayload = payload;
           next();
         } else {
-          res.status(401).send("401 Unauthorized");
+          res.status(401).json({ message: "401 Unauthorized" });
         }
       }
     );
@@ -57,7 +57,7 @@ const sec = {
       });
       res.status(200).json(token);
     } else {
-      res.status(401).send("<h1>401 - Unauthorized</h1>");
+      res.status(401).json({ message: "401 Unauthorized" });
     }
   },
 
@@ -65,9 +65,9 @@ const sec = {
     const { email, refreshToken } = req.body.jwtPayload ?? "";
     if (email in UIDs && UIDs[email] == refreshToken) {
       delete UIDs[email];
-      res.status(204).json({ message: "user logout" });
+      res.status(204).json({ message: "User logout" });
     } else {
-      res.status(401).send("<h1>401 - Unauthorized</h1>");
+      res.status(401).json({ message: "401 Unauthorized" });
     }
   },
 };

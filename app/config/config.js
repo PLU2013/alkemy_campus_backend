@@ -1,7 +1,7 @@
 const dotenv = require("dotenv").config();
 
 module.exports = {
-  PORT: process.env.PORT | 3000,
+  PORT: process.env.PORT | 3001,
   DB: process.env.DB,
   PRIVATE_KEY: process.env.PRIVATE_KEY,
   JWT_EXP: process.env.JWT_EXP,

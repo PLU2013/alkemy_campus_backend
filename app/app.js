@@ -14,11 +14,10 @@ App.use(bodyParser.urlencoded({ extended: false }));
 App.use("/api/login", Users);
 App.use("/api/users", validateToken, Users);
 App.use("/api/ops", validateToken, Ops);
+App.use("*", (req, res) => res.status(403).json({ message: "403 Forbiden" }));
 
 App.get("/", (req, res) => {
   res.send("<h1>Alkemy Campus Challenge</h1>");
 });
-
-App.use("*", (req, res) => res.status(403).send("<h1>403 Forbiden!</h1>"));
 
 module.exports = App;
