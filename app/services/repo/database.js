@@ -185,13 +185,14 @@ const db = {
    * @returns {object} Account balance {acount_balance: #####.##}.
    */
   async updateUserAcountBalance(user_id) {
+    await query(queries.setAccountBalance, [0, new Date(), user_id]);
     const res = await query(queries.updateAccountBalance, [
       new Date(),
       user_id,
     ]);
     return res.affectedRows === 1
       ? (await query(queries.getAccountBalance, [user_id]))[0]
-      : res;
+      : { account_balance: "0.00" };
   },
 
   async getConcepts() {

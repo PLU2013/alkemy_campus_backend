@@ -151,6 +151,16 @@ module.exports = {
 
   /**
    * @type {string}
+   * Set the account balance for an user.
+   * Use [value, user_id] as second param in the query.
+   * @type {real} value.
+   * @type {datetime} updated_at.
+   * @type {int} user_id.
+   */
+  setAccountBalance: `UPDATE users SET account_balance = ?, updated_at = ? WHERE id = ?`,
+
+  /**
+   * @type {string}
    * Get al concepts list.
    * Use no params required.
    */
