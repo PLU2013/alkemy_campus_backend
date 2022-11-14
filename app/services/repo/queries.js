@@ -6,8 +6,8 @@ module.exports = {
    * @type {string} email.
    * @type {string} pass.
    */
-  userLogin: `SELECT id, name, lastname, email, account_balance, created_at  
-    FROM users WHERE pass = SHA(?) AND email = ? AND active = true`,
+  userLogin: `SELECT id, name, lastname, active, email, account_balance, created_at, updated_at 
+    FROM users WHERE pass = SHA(?) AND email = ?`,
 
   /**
    * @type {string}
@@ -43,8 +43,22 @@ module.exports = {
    * @type {string(3)} type.
    * @type {DateTime} date.
    */
-  putTransaction: `INSERT INTO operations (user_id, concept_id, amount, type, date)
+  newTransaction: `INSERT INTO operations (user_id, concept_id, amount, type, date)
       VALUES (?, ?, ?, ?, ?)`,
+
+  /**
+   * @type {string}
+   * Update one operation fiel.
+   * Use [concept_id, amount, canceled_date, id, user_id] as second param in the query.
+   * @type {int} concept_id.
+   * @type {number} amount.
+   * @type {DateTime | null} canceled_date.
+   * @type {int} id.
+   * @type {int} user_id.
+   */
+  updateTransaction: `UPDATE operations
+      SET concept_id = ?, amount = ?, canceled_date = ?
+      WHERE id = ? AND user_id = ?`,
 
   /**
    * @type {string}
@@ -74,6 +88,34 @@ module.exports = {
 
   /**
    * @type {string}
+   * Update user's password
+   * Use [pass, updated_at, user_id] as second param in the query.
+   * @type {string} pass.
+   * @type {datetime} updated_at.
+   * @type {int} user_id.
+   */
+  changePass: `UPDATE users
+        SET pass = SHA(?), updated_at = ?
+        WHERE id = ?`,
+
+  /**
+   * @type {string}
+   * Delete the operations of an user.
+   * Use [user_id] as second param in the query.
+   * @type {int} user_id.
+   */
+  deleteUserOps: `DELETE FROM operations WHERE user_id = ?`,
+
+  /**
+   * @type {string}
+   * Delete an user by id.
+   * Use [id] as second param in the query.
+   * @type {int} id.
+   */
+  deleteUser: `DELETE FROM users WHERE id = ?`,
+
+  /**
+   * @type {string}
    * Set active status to user by user_id.
    * Use [active, updated_at, user_id] as second param in the query.
    * @type {boolean} active.
@@ -97,4 +139,20 @@ module.exports = {
     GROUP BY user_id, canceled) op ON u.id = op.user_id
     SET u.account_balance = op.a, updated_at = ?
     WHERE u.id = ? AND canceled = false`,
+
+  /**
+   * @type {string}
+   * Get the account balance for an user.
+   * Use [user_id] as second param in the query.
+   * @type {datetime} updated_at.
+   * @type {int} user_id.
+   */
+  getAccountBalance: `SELECT account_balance FROM users WHERE id = ?`,
+
+  /**
+   * @type {string}
+   * Get al concepts list.
+   * Use no params required.
+   */
+  getConcepts: `SELECT * FROM concepts`,
 };

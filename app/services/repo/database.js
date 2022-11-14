@@ -18,6 +18,7 @@ const db = {
       process.exit(1);
     }
   },
+
   /**
    * @method chkUserPass - Aunthentificates the user login.
    * @param {string} email  - User email.
@@ -28,10 +29,10 @@ const db = {
     const [results] = await connection.query(queries.userLogin, [pass, email]);
     console.log(
       results.length == 1
-        ? `User logged in as ${results[0].email}`
-        : `Invalid user or pass for this ${email}`
+        ? `User logged in as ${results[0].email} - ${new Date()}\n`
+        : `Invalid user or pass for this ${email} - ${new Date()}\n`
     );
-    return results.length == 1 ? generateToken(results[0]) : [];
+    return results.length == 1 ? results[0] : null;
   },
 
   /**
@@ -50,6 +51,25 @@ const db = {
       pass,
       new Date(),
     ]);
+  },
+
+  /**
+   * @method deleteUser - Delete an user by id.
+   * @param {int} id  - User's id.
+   * @returns {object} mysql server response.
+   */
+  async deleteUser(id) {
+    return await query(queries.deleteUser, [id]);
+  },
+
+  /**
+   * @method updatePass - Change user's password.
+   * @param {string} pass  - New password.
+   * @param {int} userId  - User's id.
+   * @returns {object} mysql server response.
+   */
+  async updatePass(newPass, userId) {
+    return await query(queries.changePass, [newPass, new Date(), userId]);
   },
 
   /**
@@ -72,6 +92,14 @@ const db = {
    */
   async restoreUser(user_id) {
     return await query(queries.setUserActiveStatus, [true, null, user_id]);
+  },
+  /**
+   * @method deleteAllUserOps - Delete all operations to an user id.
+   * @param {int} user_id  - User id.
+   * @returns {object} mysql server response.
+   */
+  async deleteAllUserOps(user_id) {
+    return await query(queries.deleteUserOps, [user_id]);
   },
 
   /**
@@ -96,22 +124,32 @@ const db = {
    * @method cancelOperation - Set cancel status to an id operation.
    * @param {int} id  - Operation id.
    * @param {int} user_id - User id.
-   * @returns {object} mysql server response.
+   * @returns {object} new user account balance.
    */
   async cancelOperation(id, user_id) {
     await query(queries.cancelTransaction, [true, new Date(), id, user_id]);
     return await db.updateUserAcountBalance(user_id);
   },
   /**
-   * @method putOperation - Write a new operation into the operations table.
+   * @method restoreOperation - Set cancel status to an id operation.
+   * @param {int} id  - Operation id.
+   * @param {int} user_id - User id.
+   * @returns {object} mysql server response.
+   */
+  async restoreOperation(id, user_id) {
+    await query(queries.cancelTransaction, [false, new Date(), id, user_id]);
+    return await db.updateUserAcountBalance(user_id);
+  },
+  /**
+   * @method newOperation - Write a new operation into the operations table.
    * @param {int} user_id - User id.
    * @param {int} concept_id  - Concept id.
    * @param {number} amount - Operation amount.
    * @param {string(3)} type - Type of operation.
    * @returns {object} mysql server response.
    */
-  async putOperation(user_id, concept_id, amount, type) {
-    const res = await query(queries.putTransaction, [
+  async newOperation(user_id, concept_id, amount, type) {
+    const res = await query(queries.newTransaction, [
       user_id,
       concept_id,
       amount,
@@ -120,14 +158,44 @@ const db = {
     ]);
     return res.insertId != 0 ? await db.updateUserAcountBalance(user_id) : res;
   },
-
   /**
-   * @method updateUserAcountBalance - Write a new operation into the operations table.
+   * @method updateOperation - Update an operation into the operations table.
+   * @param {int} concept_id  - Concept id.
+   * @param {number} amount - Operation amount.
+   * @param {int} id - Operation id.
    * @param {int} user_id - User id.
    * @returns {object} mysql server response.
    */
+  async updateOperation(concept_id, amount, id, user_id) {
+    const res = await query(queries.updateTransaction, [
+      concept_id,
+      amount,
+      new Date(),
+      id,
+      user_id,
+    ]);
+    return res.affectedRows == 1
+      ? await db.updateUserAcountBalance(user_id)
+      : res;
+  },
+
+  /**
+   * @method updateUserAcountBalance - Update user account balance.
+   * @param {int} user_id - User id.
+   * @returns {object} Account balance {acount_balance: #####.##}.
+   */
   async updateUserAcountBalance(user_id) {
-    return await query(queries.updateAccountBalance, [new Date(), user_id]);
+    const res = await query(queries.updateAccountBalance, [
+      new Date(),
+      user_id,
+    ]);
+    return res.affectedRows === 1
+      ? (await query(queries.getAccountBalance, [user_id]))[0]
+      : res;
+  },
+
+  async getConcepts() {
+    return await query(queries.getConcepts, []);
   },
 };
 

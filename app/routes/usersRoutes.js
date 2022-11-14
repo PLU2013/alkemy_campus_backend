@@ -1,15 +1,25 @@
 const express = require("express");
 const UsersController = require("../controllers/usersController.js");
-const { refreshTokenService, rejectTokenService } = require("../sec");
+const {
+  validateToken,
+  refreshTokenService,
+  rejectTokenService,
+} = require("../sec");
 
 const Router = express.Router();
 
-Router.post("/", UsersController.getUserLogin);
+Router.post("/login", UsersController.getUserLogin);
 
-Router.put("/new", UsersController.newUser);
+Router.post("/new", UsersController.newUser);
 
-Router.post("/cancel/:userId", UsersController.cancelUser);
-Router.post("/restore/:userId", UsersController.restoreUser);
+Router.use(validateToken);
+
+Router.delete("/delete", UsersController.delete);
+
+Router.patch("/change_pass", UsersController.changePass);
+
+Router.patch("/cancel/:userId", UsersController.cancelUser);
+Router.patch("/restore/:userId", UsersController.restoreUser);
 
 Router.post("/token/refresh", refreshTokenService);
 Router.post("/token/reject", rejectTokenService);

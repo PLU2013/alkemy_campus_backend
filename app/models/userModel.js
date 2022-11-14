@@ -3,13 +3,19 @@ module.exports = class UserModel {
   name;
   lastname;
   email;
-  pass;
   active;
   accountBalance;
-  created_at;
-  updated_at;
+  createdAt;
+  updatedAt;
 
   constructor(json) {
-    Object.assign(this, json);
+    this.id = json.id;
+    this.name = json.name;
+    this.lastname = json.lastname;
+    this.email = json.email;
+    this.active = json.active;
+    this.accountBalance = json.account_balance;
+    this.createdAt = json.created_at;
+    this.updatedAt = json.updated_at;
   }
 };
