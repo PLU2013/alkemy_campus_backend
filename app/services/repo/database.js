@@ -16,7 +16,6 @@ const db = {
     } catch (err) {
       console.log("DATA BASE  ERROR **********************");
       console.log(err);
-      //process.exit(1);
     }
   },
 
