@@ -14,7 +14,6 @@ const sec = {
       payload.refreshToken = refreshToken;
       UIDs[payload.email] = refreshToken;
       const variablePrivateKey = refreshToken.substring(48, 97);
-      console.log(UIDs);
       const token = await jwtSign(
         payload,
         cfg.PRIVATE_KEY + variablePrivateKey,

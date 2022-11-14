@@ -14,10 +14,9 @@ const db = {
       connection = await mysql.createConnection(cfg.DB);
       console.log("DB connection succefull!!");
     } catch (err) {
-      console.log("DATA BASE ERROR **********************");
-      console.log(cfg.DB);
-      //console.log(err);
-      //process.exit(1);
+      console.log("DATA BASE  ERROR **********************");
+      console.log(err);
+      process.exit(1);
     }
   },
 
