@@ -207,6 +207,7 @@ const db = {
  * @returns {any} results - Query response.
  */
 async function query(query, params) {
+  console.log(query);
   const [results] = await connection.query(query, params);
   return results;
 }
