@@ -12,13 +12,13 @@ App.use(cors());
 App.use(bodyParser.json());
 App.use(bodyParser.urlencoded({ extended: false }));
 
+App.get("/", (req, res) => {
+  res.send("<h1>Alkemy Campus Challenge</h1>");
+});
+
 App.use("/api/users", Users);
 App.use("/api/ops", validateToken, Ops);
 App.use("/api/concepts", validateToken, Concepts);
 App.use("*", (req, res) => res.status(403).json({ message: "403 Forbiden" }));
-
-App.get("/", (req, res) => {
-  res.send("<h1>Alkemy Campus Challenge</h1>");
-});
 
 module.exports = App;
